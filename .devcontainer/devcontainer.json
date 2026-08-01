@@ -1,0 +1,15 @@
+{
+  "name": "datahub-curator-agent",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb",
+    "storage": "32gb"
+  },
+  "postCreateCommand": "pip install --user acryl-datahub uv && echo done",
+  "customizations": {},
+  "forwardPorts": [9002, 8080]
+}
