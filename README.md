@@ -7,6 +7,8 @@
 Built for **[Build with DataHub: The Agent Hackathon](https://datahub.devpost.com/)**
 — Track 1 (*Agents That Do Real Work*).
 
+🎬 **[Watch the 3-minute demo](https://youtu.be/T7juEH8T5aQ)**
+
 ## What it does
 
 Every patrol, Sherlock:
