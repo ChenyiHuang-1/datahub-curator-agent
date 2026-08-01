@@ -44,7 +44,7 @@ def find_cold_cases(mcp: DataHubMCP, limit: int = 20, query: str = "*") -> list[
     res = mcp.call(
         "search",
         query=query,
-        filter=json.dumps({"entity_type": ["dataset"]}),
+        filter="entity_type = dataset",
         num_results=limit,
     )
     hits = res.get("results", res) if isinstance(res, dict) else res

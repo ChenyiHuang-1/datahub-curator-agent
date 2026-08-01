@@ -102,7 +102,7 @@ def investigate(mcp: DataHubMCP, case: ColdCase) -> EvidenceBundle:
         res = mcp.call(
             "search",
             query="*",
-            filter=json.dumps({"and": [{"entity_type": ["dataset"]}, {"platform": [case.platform]}]}),
+            filter=f"entity_type = dataset AND platform = {case.platform}",
             num_results=20,
         )
         hits = _as_list(res, "results", "searchResults", "entities")
