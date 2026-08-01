@@ -50,7 +50,8 @@ def write_back(
             try:
                 mcp.call(
                     "update_description",
-                    urn=urn,
+                    entity_urn=urn,
+                    operation="set",
                     description=deduction.table_description + AI_MARK,
                 )
                 r.note("table description written")
@@ -64,7 +65,7 @@ def write_back(
             written_cols += 1
             continue
         try:
-            mcp.call("update_description", urn=urn, field_path=fp, description=desc)
+            mcp.call("update_description", entity_urn=urn, column_path=fp, operation="set", description=desc)
             written_cols += 1
         except Exception as e:
             r.err(f"column {fp} failed: {str(e)[:120]}")
@@ -79,7 +80,12 @@ def write_back(
         else:
             for f in pii_fields:
                 try:
-                    mcp.call("add_tags", urn=urn, field_path=f, tags=["PII-Suspect"])
+                    mcp.call(
+                        "add_tags",
+                        tag_urns=["urn:li:tag:PII-Suspect"],
+                        entity_urns=[urn],
+                        column_paths=[f],
+                    )
                 except Exception as e:
                     r.err(f"PII tag {f} failed: {str(e)[:120]}")
             r.note(f"tagged {len(pii_fields)} columns PII-Suspect")
@@ -97,8 +103,10 @@ def write_back(
         try:
             mcp.call(
                 "save_document",
+                document_type="general",
                 title=f"Sherlock Case Report: {evidence.case.name}",
                 content=report,
+                related_assets=[urn],
             )
             r.note("case report saved to graph")
         except Exception as e:

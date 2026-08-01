@@ -39,7 +39,12 @@ def _get(d: dict, *path, default=None):
 
 def find_cold_cases(mcp: DataHubMCP, limit: int = 20, query: str = "*") -> list[ColdCase]:
     """Scan datasets and diagnose which ones are neglected."""
-    res = mcp.call("search", query=query, entity_types=["dataset"], num_results=limit)
+    res = mcp.call(
+        "search",
+        query=query,
+        filter={"entity_type": ["dataset"]},
+        num_results=limit,
+    )
     hits = res.get("results", res) if isinstance(res, dict) else res
     if isinstance(hits, dict):
         hits = hits.get("searchResults", hits.get("entities", []))

@@ -76,16 +76,16 @@ def investigate(mcp: DataHubMCP, case: ColdCase) -> EvidenceBundle:
 
     # 1. schema fields
     try:
-        res = mcp.call("list_schema_fields", dataset_urn=case.urn)
+        res = mcp.call("list_schema_fields", urn=case.urn)
         ev.schema_fields = _as_list(res, "fields", "schemaFields", "results")
     except Exception:
         fields = case.entity.get("schema", {}).get("fields") if isinstance(case.entity.get("schema"), dict) else None
         ev.schema_fields = fields or []
 
     # 2. lineage both directions
-    for direction, target in (("upstream", "upstream"), ("downstream", "downstream")):
+    for is_upstream, target in ((True, "upstream"), (False, "downstream")):
         try:
-            res = mcp.call("get_lineage", urn=case.urn, direction=direction, max_hops=2)
+            res = mcp.call("get_lineage", urn=case.urn, upstream=is_upstream, max_hops=2)
             setattr(ev, target, _as_list(res, "entities", "results", "lineage"))
         except Exception as e:
             setattr(ev, target, [{"error": str(e)[:200]}])
@@ -99,7 +99,12 @@ def investigate(mcp: DataHubMCP, case: ColdCase) -> EvidenceBundle:
 
     # 4. sibling tables for naming conventions
     try:
-        res = mcp.call("search", query=f"platform:{case.platform}", entity_types=["dataset"], num_results=20)
+        res = mcp.call(
+            "search",
+            query="*",
+            filter={"and": [{"entity_type": ["dataset"]}, {"platform": [case.platform]}]},
+            num_results=20,
+        )
         hits = _as_list(res, "results", "searchResults", "entities")
         names = []
         for h in hits:
