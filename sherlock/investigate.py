@@ -86,7 +86,12 @@ def investigate(mcp: DataHubMCP, case: ColdCase) -> EvidenceBundle:
     for is_upstream, target in ((True, "upstream"), (False, "downstream")):
         try:
             res = mcp.call("get_lineage", urn=case.urn, upstream=is_upstream, max_hops=2)
-            setattr(ev, target, _as_list(res, "entities", "results", "lineage"))
+            if isinstance(res, dict):
+                inner = res.get("upstreams") or res.get("downstreams") or res
+                items = _as_list(inner, "searchResults", "entities", "results", "lineage")
+            else:
+                items = _as_list(res, "entities", "results", "lineage")
+            setattr(ev, target, items)
         except Exception as e:
             setattr(ev, target, [{"error": str(e)[:200]}])
 
