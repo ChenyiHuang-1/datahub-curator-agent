@@ -1,0 +1,21 @@
+name: Nightly Sherlock patrol
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  patrol:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e . mcp-server-datahub
+      - name: Patrol the graph
+        env:
+          DATAHUB_GMS_URL: ${{ secrets.DATAHUB_GMS_URL }}
+          DATAHUB_GMS_TOKEN: ${{ secrets.DATAHUB_GMS_TOKEN }}
+          SHERLOCK_LLM_API_KEY: ${{ secrets.SHERLOCK_LLM_API_KEY }}
+        run: sherlock patrol --limit 50 --max-cases 5
