@@ -9,6 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+import json
+
 from .mcp_client import DataHubMCP
 
 
@@ -42,7 +44,7 @@ def find_cold_cases(mcp: DataHubMCP, limit: int = 20, query: str = "*") -> list[
     res = mcp.call(
         "search",
         query=query,
-        filter={"entity_type": ["dataset"]},
+        filter=json.dumps({"entity_type": ["dataset"]}),
         num_results=limit,
     )
     hits = res.get("results", res) if isinstance(res, dict) else res
