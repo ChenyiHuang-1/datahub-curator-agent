@@ -30,6 +30,7 @@ from datahub.metadata.schema_classes import (
     StringTypeClass,
     NumberTypeClass,
     TimeTypeClass,
+    TagPropertiesClass,
     UpstreamClass,
     UpstreamLineageClass,
 )
@@ -153,6 +154,19 @@ def main() -> None:
     emitter = DatahubRestEmitter(gms_server=GMS, extra_headers={})
     emitter.test_connection()
     print(f"Connected to {GMS}")
+
+    # governance tag Sherlock uses for suspected PII
+    emitter.emit(
+        MetadataChangeProposalWrapper(
+            entityUrn="urn:li:tag:PII-Suspect",
+            aspect=TagPropertiesClass(
+                name="PII-Suspect",
+                description="Flagged by an automated agent as likely containing personal data. Pending human review.",
+                colorHex="#E57373",
+            ),
+        )
+    )
+    print("created tag PII-Suspect")
 
     for name, desc, owner, fields in TABLES:
         u = urn(name)

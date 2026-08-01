@@ -51,7 +51,7 @@ def write_back(
                 mcp.call(
                     "update_description",
                     entity_urn=urn,
-                    operation="set",
+                    operation="replace",
                     description=deduction.table_description + AI_MARK,
                 )
                 r.note("table description written")
@@ -65,7 +65,7 @@ def write_back(
             written_cols += 1
             continue
         try:
-            mcp.call("update_description", entity_urn=urn, column_path=fp, operation="set", description=desc)
+            mcp.call("update_description", entity_urn=urn, column_path=fp, operation="replace", description=desc)
             written_cols += 1
         except Exception as e:
             r.err(f"column {fp} failed: {str(e)[:120]}")
@@ -103,7 +103,7 @@ def write_back(
         try:
             mcp.call(
                 "save_document",
-                document_type="general",
+                document_type="Analysis",
                 title=f"Sherlock Case Report: {evidence.case.name}",
                 content=report,
                 related_assets=[urn],
